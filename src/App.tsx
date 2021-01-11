@@ -1,26 +1,67 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { FC, useEffect, useState } from 'react';
+import CreateTodoForm from './components/CreateTodoForm';
+import TodoList from './components/TodoList';
+import * as TodosService from './local-storages/todos-service';
 
-function App() {
+import type Todo from './models/todo';
+import type { HandleChangeNewTodoTitle, HandleSubmitNewTodo } from './components/CreateTodoForm';
+
+type Todos = ReadonlyArray<Todo>;
+type FetchTodos = () => void;
+type CreateTodo = ({ title, completed }: Pick<Todo, 'title' | 'completed'>) => void;
+type UpdateTodo = ({ id, title, completed }: Pick<Todo, 'id' | 'title' | 'completed'>) => void;
+type RemoveTodo = ({ id }: Pick<Todo, 'id'>) => void;
+
+const App: FC = () => {
+  //
+  const [todos, setTodos] = useState<Todos>([]);
+
+  const fetchTodos: FetchTodos = () => {
+    setTodos(TodosService.getTodos());
+  };
+
+  const createTodo: CreateTodo = ({ title, completed }) => {
+    TodosService.postTodo({ title, completed });
+    fetchTodos();
+  };
+
+  const updateTodo: UpdateTodo = ({ id, title, completed }) => {
+    TodosService.putTodo({ id, title, completed });
+    fetchTodos();
+  };
+
+  const removeTodo: RemoveTodo = ({ id }) => {
+    TodosService.deleteTodo({ id });
+    fetchTodos();
+  };
+
+  useEffect(() => {
+    fetchTodos();
+  }, []);
+
+  //
+  const [newTodoTitle, setNewTodoTitle] = useState<string>('');
+
+  const handleChangeNewTodoTitle: HandleChangeNewTodoTitle = (event) => {
+    setNewTodoTitle(event.target.value);
+  };
+
+  const handleSubmitNewTodo: HandleSubmitNewTodo = (event) => {
+    event.preventDefault();
+    createTodo({ title: newTodoTitle, completed: false });
+    setNewTodoTitle('');
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="max-w-lg mx-auto py-5 flex-col space-y-3">
+      <CreateTodoForm
+        newTodoTitle={newTodoTitle}
+        handleChangeNewTodoTitle={handleChangeNewTodoTitle}
+        handleSubmitNewTodo={handleSubmitNewTodo}
+      />
+      <TodoList todos={todos} handleUpdateTodo={updateTodo} handleRemoveTodo={removeTodo} />
     </div>
   );
-}
+};
 
 export default App;
