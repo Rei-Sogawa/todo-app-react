@@ -32,7 +32,7 @@ const TodoList: FC<Props> = (props) => {
     todoBeingEdited,
   ]);
 
-  // handlers of TodoItem
+  // TodoItem の handler
   const handleToggleCompleted: HandleToggleCompleted = (todo) => {
     const { id, title, completed } = todo;
     props.handleUpdateTodo({ id, title, completed: !completed });
@@ -52,7 +52,7 @@ const TodoList: FC<Props> = (props) => {
     props.handleRemoveTodo({ id: todoId });
   };
 
-  // handlers of EditTodoForm
+  // EditTodoForm の handler
   const handleChangeTodoTitleBeingEdited: HandleChangeTodoTitleBeingEdited = (event) => {
     setTodoBeingEdited((prevObj) => Object.assign({}, prevObj, { title: event.target.value }));
   };

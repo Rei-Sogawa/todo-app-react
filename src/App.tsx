@@ -13,7 +13,8 @@ type UpdateTodo = ({ id, title, completed }: Pick<Todo, 'id' | 'title' | 'comple
 type RemoveTodo = ({ id }: Pick<Todo, 'id'>) => void;
 
 const App: FC = () => {
-  //
+  // todos-store のようなところ
+  // custom hook 化する？
   const [todos, setTodos] = useState<Todos>([]);
 
   const fetchTodos: FetchTodos = () => {
@@ -39,7 +40,7 @@ const App: FC = () => {
     fetchTodos();
   }, []);
 
-  //
+  // CreateTodoForm に関わる state と handler
   const [newTodoTitle, setNewTodoTitle] = useState<string>('');
 
   const handleChangeNewTodoTitle: HandleChangeNewTodoTitle = (event) => {
