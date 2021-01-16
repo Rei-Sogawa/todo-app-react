@@ -1,4 +1,4 @@
-import { FC, useCallback, useState } from 'react';
+import { FC, useState } from 'react';
 import TodoItem from './TodoItem';
 import EditTodoForm from './EditTodoForm';
 
@@ -10,7 +10,6 @@ import type {
   HandleCancelEdit,
 } from './EditTodoForm';
 
-// props type
 type HandleUpdateTodo = ({
   id,
   title,
@@ -24,53 +23,44 @@ type Props = {
   handleUpdateTodo: HandleUpdateTodo;
 };
 
-const TodoList: FC<Props> = (props) => {
-  // todoBeingEdited
-  const [todoBeingEdited, setTodoBeingEdited] = useState<Todo>();
+const TodoList: FC<Props> = ({ todos, handleRemoveTodo, handleUpdateTodo }) => {
+  const [todoBeingEdited, setTodoBeingEdited] = useState<Todo | null>(null);
 
-  const isTodoBeingEdited = useCallback((todo: Todo) => todo.id === todoBeingEdited?.id, [
-    todoBeingEdited,
-  ]);
+  const isTodoBeingEdited: (todo: Todo) => boolean = (todo) => todo.id === todoBeingEdited?.id;
 
   // TodoItem の handler
   const handleToggleCompleted: HandleToggleCompleted = (todo) => {
     const { id, title, completed } = todo;
-    props.handleUpdateTodo({ id, title, completed: !completed });
+    handleUpdateTodo({ id, title, completed: !completed });
   };
 
   const handleClickEdit: HandleClickEdit = (todoId) => {
-    setTodoBeingEdited(
-      // spread 演算子で書くとエラーになるので
-      Object.assign(
-        {},
-        props.todos.find((todo) => todo.id === todoId),
-      ),
-    );
+    setTodoBeingEdited({ ...todos.find((todo) => todo.id === todoId) } as Todo);
   };
 
   const handleClickRemove: HandleClickRemove = (todoId) => {
-    props.handleRemoveTodo({ id: todoId });
+    handleRemoveTodo({ id: todoId });
   };
 
   // EditTodoForm の handler
   const handleChangeTodoTitleBeingEdited: HandleChangeTodoTitleBeingEdited = (event) => {
-    setTodoBeingEdited((prevObj) => Object.assign({}, prevObj, { title: event.target.value }));
+    setTodoBeingEdited((prevObj) => ({ ...prevObj, title: event.target.value } as Todo));
   };
 
   const handleSubmitEditedTodo: HandleSubmitEditedTodo = (event) => {
     event.preventDefault();
     const { id, title, completed } = todoBeingEdited!;
-    props.handleUpdateTodo({ id, title, completed });
-    setTodoBeingEdited(undefined);
+    handleUpdateTodo({ id, title, completed });
+    setTodoBeingEdited(null);
   };
 
   const handleCancelEdit: HandleCancelEdit = () => {
-    setTodoBeingEdited(undefined);
+    setTodoBeingEdited(null);
   };
 
   return (
     <div className="flex flex-col space-y-1">
-      {props.todos.map((todo) => (
+      {todos.map((todo) => (
         <div key={todo.id}>
           {isTodoBeingEdited(todo) ? (
             <EditTodoForm

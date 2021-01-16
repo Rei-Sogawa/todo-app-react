@@ -1,3 +1,12 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer components {
+  .text-input {
+    @apply shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full border-gray-300 rounded-md px-8;
+  }
+  .checkbox {
+    @apply border-gray-300 rounded-sm appearance-none checked:bg-blue-600 checked:border-transparent focus:ring-0 focus:ring-offset-0;
+  }
+}
