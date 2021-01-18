@@ -4,11 +4,7 @@ import EditTodoForm from './EditTodoForm';
 
 import type Todo from '../models/todo';
 import type { HandleToggleCompleted, HandleClickEdit, HandleClickRemove } from './TodoItem';
-import type {
-  HandleChangeTodoTitleBeingEdited,
-  HandleSubmitEditedTodo,
-  HandleCancelEdit,
-} from './EditTodoForm';
+import type { HandleSubmitEditedTodo, HandleCancelEdit } from './EditTodoForm';
 
 type HandleUpdateTodo = ({
   id,
@@ -24,9 +20,9 @@ type Props = {
 };
 
 const TodoList: FC<Props> = ({ todos, handleRemoveTodo, handleUpdateTodo }) => {
-  const [todoBeingEdited, setTodoBeingEdited] = useState<Todo | null>(null);
+  const [todoIdBeingEdited, setTodoIdBeingEdited] = useState<string>();
 
-  const isTodoBeingEdited: (todo: Todo) => boolean = (todo) => todo.id === todoBeingEdited?.id;
+  const isTodoBeingEdited: (todo: Todo) => boolean = (todo) => todo.id === todoIdBeingEdited;
 
   // TodoItem の handler
   const handleToggleCompleted: HandleToggleCompleted = (todo) => {
@@ -35,7 +31,7 @@ const TodoList: FC<Props> = ({ todos, handleRemoveTodo, handleUpdateTodo }) => {
   };
 
   const handleClickEdit: HandleClickEdit = (todoId) => {
-    setTodoBeingEdited({ ...todos.find((todo) => todo.id === todoId) } as Todo);
+    setTodoIdBeingEdited(todoId);
   };
 
   const handleClickRemove: HandleClickRemove = (todoId) => {
@@ -43,19 +39,18 @@ const TodoList: FC<Props> = ({ todos, handleRemoveTodo, handleUpdateTodo }) => {
   };
 
   // EditTodoForm の handler
-  const handleChangeTodoTitleBeingEdited: HandleChangeTodoTitleBeingEdited = (event) => {
-    setTodoBeingEdited((prevObj) => ({ ...prevObj, title: event.target.value } as Todo));
-  };
-
-  const handleSubmitEditedTodo: HandleSubmitEditedTodo = (event) => {
-    event.preventDefault();
-    const { id, title, completed } = todoBeingEdited!;
+  const handleSubmitEditedTodo: HandleSubmitEditedTodo = (title) => {
+    const todoBeingEdited = todos.find(isTodoBeingEdited);
+    if (!todoBeingEdited) {
+      throw new Error('can not find todoBeingEdited');
+    }
+    const { id, completed } = todoBeingEdited;
     handleUpdateTodo({ id, title, completed });
-    setTodoBeingEdited(null);
+    setTodoIdBeingEdited(undefined);
   };
 
   const handleCancelEdit: HandleCancelEdit = () => {
-    setTodoBeingEdited(null);
+    setTodoIdBeingEdited(undefined);
   };
 
   return (
@@ -64,8 +59,7 @@ const TodoList: FC<Props> = ({ todos, handleRemoveTodo, handleUpdateTodo }) => {
         <div key={todo.id}>
           {isTodoBeingEdited(todo) ? (
             <EditTodoForm
-              todoTitleBeingEdited={todoBeingEdited!.title}
-              handleChangeTodoTitleBeingEdited={handleChangeTodoTitleBeingEdited}
+              todo={todo}
               handleSubmitEditedTodo={handleSubmitEditedTodo}
               handleCancelEdit={handleCancelEdit}
             />

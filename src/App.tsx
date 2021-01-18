@@ -7,7 +7,6 @@ import type { HandleChangeNewTodoTitle, HandleSubmitNewTodo } from './components
 
 const App: FC = () => {
   // todos store
-  // そもそも store ってなんだ？
   const { todos, createTodo, updateTodo, removeTodo } = useTodos();
 
   // CreateTodoForm に関わる state と handler
