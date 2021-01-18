@@ -1,24 +1,23 @@
 import { FC, ChangeEvent, FormEvent, useRef, useEffect, useState } from 'react';
-import Todo from '../models/todo';
 
 export type HandleChangeTodoTitleBeingEdited = (event: ChangeEvent<HTMLInputElement>) => void;
 export type HandleSubmitEditedTodo = (title: string) => void;
 export type HandleCancelEdit = () => void;
 
 type Props = {
-  todo: Todo;
+  currentTitle: string;
   handleSubmitEditedTodo: HandleSubmitEditedTodo;
   handleCancelEdit: HandleCancelEdit;
 };
 
-const EditTodoForm: FC<Props> = ({ todo, handleSubmitEditedTodo, handleCancelEdit }) => {
+const EditTodoForm: FC<Props> = ({ currentTitle, handleSubmitEditedTodo, handleCancelEdit }) => {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     inputRef.current?.focus();
   }, []);
 
-  const [title, setTitle] = useState<string>(todo.title);
+  const [title, setTitle] = useState<string>(currentTitle);
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

@@ -59,7 +59,7 @@ const TodoList: FC<Props> = ({ todos, handleRemoveTodo, handleUpdateTodo }) => {
         <div key={todo.id}>
           {isTodoBeingEdited(todo) ? (
             <EditTodoForm
-              todo={todo}
+              currentTitle={todo.title}
               handleSubmitEditedTodo={handleSubmitEditedTodo}
               handleCancelEdit={handleCancelEdit}
             />
