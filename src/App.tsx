@@ -1,26 +1,37 @@
-import React from 'react';
-import logo from './logo.svg';
-import './App.css';
+import { FC, useState } from 'react';
+import CreateTodoForm from './components/CreateTodoForm';
+import TodoList from './components/TodoList';
+import useTodos from './hooks/use-todos';
 
-function App() {
+import type { HandleChangeNewTodoTitle, HandleSubmitNewTodo } from './components/CreateTodoForm';
+
+const App: FC = () => {
+  // todos store
+  const { todos, createTodo, updateTodo, removeTodo } = useTodos();
+
+  // CreateTodoForm に関わる state と handler
+  const [newTodoTitle, setNewTodoTitle] = useState<string>('');
+
+  const handleChangeNewTodoTitle: HandleChangeNewTodoTitle = (event) => {
+    setNewTodoTitle(event.target.value);
+  };
+
+  const handleSubmitNewTodo: HandleSubmitNewTodo = (event) => {
+    event.preventDefault();
+    createTodo({ title: newTodoTitle, completed: false });
+    setNewTodoTitle('');
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="max-w-lg mx-auto py-5 flex-col space-y-3">
+      <CreateTodoForm
+        newTodoTitle={newTodoTitle}
+        handleChangeNewTodoTitle={handleChangeNewTodoTitle}
+        handleSubmitNewTodo={handleSubmitNewTodo}
+      />
+      <TodoList todos={todos} handleUpdateTodo={updateTodo} handleRemoveTodo={removeTodo} />
     </div>
   );
-}
+};
 
 export default App;
